@@ -48,29 +48,9 @@
   tg.ready();
   tg.expand();
 
-  const AdController = window.Adsgram?.init({ blockId: "54308" });
+  // Инициализация AdsGram с НОВЫМ Block ID
+  const AdController = window.Adsgram?.init({ blockId: "54411" });
 
-  // === БАЛАНС В LOCALSTORAGE ===
-  const STORAGE_KEY = "kismo_balance";
-
-  function loadBalance() {
-    const saved = localStorage.getItem(STORAGE_KEY);
-    return saved ? parseFloat(saved) : 0;
-  }
-
-  function saveBalance(value) {
-    localStorage.setItem(STORAGE_KEY, value.toFixed(4));
-  }
-
-  let balance = loadBalance();
-
-  function updateBalance() {
-    document.getElementById('balance').innerHTML = balance.toFixed(4) + '<small>$</small>';
-  }
-
-  updateBalance();
-
-  // === КНОПКА "СМОТРЕТЬ РЕКЛАМУ" ===
   document.getElementById('watchBtn').addEventListener('click', async () => {
     const btn = document.getElementById('watchBtn');
     const loader = document.getElementById('loader');
@@ -87,10 +67,9 @@
 
       await AdController.show();
 
-      // Начисляем и сохраняем
-      balance += 0.003;
-      saveBalance(balance);
-      updateBalance();
+      // Отправляем данные боту
+      tg.sendData("add:0.003");
+      
       status.textContent = '✅ Начислено +$0.003';
       tg.showAlert('✅ Начислено +$0.003');
     } catch (e) {
@@ -107,14 +86,8 @@
     }
   });
 
-  // === КНОПКА "ВЫВЕСТИ" ===
   document.getElementById('withdrawBtn').addEventListener('click', () => {
-    if (balance < 0.02) {
-      tg.showAlert('❌ Минимум для вывода: $0.02. У тебя $' + balance.toFixed(4));
-      return;
-    }
-    tg.showAlert('💸 Заявка на вывод отправлена. Сумма: $' + balance.toFixed(4));
-    // Пока просто уведомление. Позже сделаем реальный вывод.
+    tg.sendData("withdraw");
   });
 </script>
 </body>
